@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Recommendation System – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <span class="badge bg-success-subtle text-success fw-bold px-3 py-1.5 rounded-pill text-uppercase">Agronomic Decision Engine</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="advisor_title">Scientific Crop Recommendation System</h2>
+    <p class="text-muted max-w-600 mx-auto" data-i18n="advisor_sub">
+      Get agronomically validated crop recommendations based on your soil profile, seasonal conditions, and water availability with transparent explanations.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Input Form -->
+    <div class="col-lg-4">
+      <div class="krishi-card">
+        <h5 class="fw-bold text-success mb-3">
+          <i class="fa-solid fa-sliders me-2"></i> Field Soil & Climate Inputs
+        </h5>
+
+        <form method="POST" action="{{ url_for('advisor') }}">
+          <!-- Soil Type -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" data-i18n="soil_type">Soil Type (నేల రకం)</label>
+            <select name="soil_type" class="form-select">
+              <option value="black" {% if form.soil_type == 'black' %}selected{% endif %}>Black Cotton Soil (నల్లరేగడి)</option>
+              <option value="red" {% if form.soil_type == 'red' %}selected{% endif %}>Red Sandy Loam (ఎర్ర నేల)</option>
+              <option value="alluvial" {% if form.soil_type == 'alluvial' %}selected{% endif %}>Alluvial / River Silt (ఒండ్రు నేల)</option>
+              <option value="clay" {% if form.soil_type == 'clay' %}selected{% endif %}>Clayey Heavy Soil (బంక నేల)</option>
+              <option value="sandy" {% if form.soil_type == 'sandy' %}selected{% endif %}>Sandy / Coastal Soil (ఇసుక నేల)</option>
+            </select>
+          </div>
+
+          <!-- Planting Season -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" data-i18n="select_season">Planting Season (సీజన్)</label>
+            <select name="season" class="form-select">
+              <option value="kharif" {% if form.season == 'kharif' %}selected{% endif %}>Kharif (Monsoon / వానాకాలం - Jun to Oct)</option>
+              <option value="rabi" {% if form.season == 'rabi' %}selected{% endif %}>Rabi (Winter / యాసంగి - Nov to Mar)</option>
+              <option value="zaid" {% if form.season == 'zaid' %}selected{% endif %}>Zaid (Summer / వేసవి - Mar to May)</option>
+            </select>
+          </div>
+
+          <!-- Water Availability -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" data-i18n="water_access">Water Availability (నీటి వసతి)</label>
+            <select name="water_avail" class="form-select">
+              <option value="high" {% if form.water_avail == 'high' %}selected{% endif %}>Abundant / Canal & Borewell (సమృద్ధిగా)</option>
+              <option value="medium" {% if form.water_avail == 'medium' %}selected{% endif %}>Moderate / Borewell only (మధ్యస్థంగా)</option>
+              <option value="low" {% if form.water_avail == 'low' %}selected{% endif %}>Low / Rainfed Dryland (ఆరుతడి / వర్షాధారం)</option>
+            </select>
+          </div>
+
+          <!-- Soil pH (Optional) -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold" data-i18n="soil_ph">Soil pH (6.0 - 8.5)</label>
+              <input type="number" step="0.1" name="ph" class="form-control" placeholder="7.0" value="{{ form.ph }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Land Area (Acres)</label>
+              <input type="number" step="0.5" name="land_area" class="form-control" placeholder="3.0" value="{{ form.land_area }}">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-krishi-primary w-100 py-2.5 fs-6">
+            <i class="fa-solid fa-compass me-2"></i> <span data-i18n="btn_get_advice">Recommend Best Crops</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Recommendations Display -->
+    <div class="col-lg-8">
+      {% if recommendations %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-dark mb-0" data-i18n="recommendation_heading">Recommended Crops for Your Field</h5>
+          <span class="badge bg-success-subtle text-success fs-6">Top Match Ranked</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          {% for crop in recommendations %}
+            <div class="krishi-card p-3 border-start border-4 {% if crop.match_score >= 80 %}border-success{% elif crop.match_score >= 65 %}border-warning{% else %}border-secondary{% endif %}">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+                <div>
+                  <h4 class="fw-bold text-dark mb-0">
+                    {% if current_lang == 'te' %}{{ crop.name_te }}{% else %}{{ crop.name_en }}{% endif %}
+                  </h4>
+                  <div class="small text-muted">
+                    Duration: <strong>{{ crop.duration }}</strong> | Yield: <strong>{{ crop.yield_range }}</strong>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <span class="badge {% if crop.match_score >= 80 %}bg-success{% elif crop.match_score >= 65 %}bg-warning text-dark{% else %}bg-secondary{% endif %} fs-6 px-3 py-1.5 rounded-pill">
+                    {{ crop.match_score }}% Match
+                  </span>
+                  <div class="small text-muted mt-1">{{ crop.suitability_level }}</div>
+                </div>
+              </div>
+
+              <!-- Rationale -->
+              <div class="p-2.5 bg-light rounded-3 mb-2 small">
+                <strong class="text-success"><i class="fa-solid fa-circle-check me-1"></i> <span data-i18n="why_recommended">Why Recommended</span>:</strong>
+                {% if current_lang == 'te' %}{{ crop.reasons_te }}{% else %}{{ crop.reasons_en }}{% endif %}
+              </div>
+
+              <!-- Limitations -->
+              <div class="p-2.5 bg-warning-subtle rounded-3 small text-dark">
+                <strong class="text-warning-emphasis"><i class="fa-solid fa-triangle-exclamation me-1"></i> <span data-i18n="crop_limitations">Limitations & Risk Factors</span>:</strong>
+                {% if current_lang == 'te' %}{{ crop.limitations_te }}{% else %}{{ crop.limitations_en }}{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="p-3 bg-light rounded-3 border mt-4 small text-muted">
+          <i class="fa-solid fa-shield-halved text-success me-1"></i>
+          <strong>Scientific Notice:</strong> Recommendations are derived from ICAR and State Agricultural University suitability tables. Yields depend on weather variability, pest incidence, and management practices. Soil laboratory chemical testing is recommended before final seed purchase.
+        </div>
+      {% else %}
+        <div class="krishi-card d-flex flex-column align-items-center justify-content-center text-center p-5">
+          <div class="rounded-circle bg-light p-4 text-success mb-3" style="font-size: 3rem;">
+            <i class="fa-solid fa-compass"></i>
+          </div>
+          <h4 class="fw-bold text-dark">Ready for Crop Suitability Analysis</h4>
+          <p class="text-muted small max-w-500 mb-0">
+            Submit your soil and seasonal parameters on the left to receive customized crop recommendations ranked by suitability.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

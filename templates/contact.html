@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Helpline & Contact Us – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-5">
+    <span class="badge bg-success-subtle text-success fw-bold px-3 py-1.5 rounded-pill text-uppercase">Emergency Support</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="nav_contact">Farmer Helpline & Agricultural Contacts</h2>
+    <p class="text-muted max-w-600 mx-auto">
+      Immediate toll-free telephone support for crop disease emergencies, sudden pest attacks, and extreme weather damage assistance.
+    </p>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="krishi-card text-center p-4">
+        <div class="feature-icon-box feature-icon-green mx-auto">
+          <i class="fa-solid fa-phone-volume"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-1">Kisan Call Centre</h5>
+        <div class="text-muted small mb-3">All India Free Agricultural Advisory</div>
+        <a href="tel:18001801551" class="btn btn-krishi-primary w-100 rounded-pill fs-6 fw-bold">
+          1800-180-1551
+        </a>
+        <div class="small text-muted mt-2">Available 6:00 AM - 10:00 PM (Daily)</div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="krishi-card text-center p-4">
+        <div class="feature-icon-box feature-icon-amber mx-auto">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-1">Disaster & Flood Control</h5>
+        <div class="text-muted small mb-3">State Emergency Operations Centre</div>
+        <a href="tel:1070" class="btn btn-warning text-dark w-100 rounded-pill fs-6 fw-bold">
+          Toll-Free: 1070 / 112
+        </a>
+        <div class="small text-muted mt-2">24x7 Emergency Services</div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="krishi-card text-center p-4">
+        <div class="feature-icon-box feature-icon-blue mx-auto">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-1">KVK Lam Farm, Guntur</h5>
+        <div class="text-muted small mb-3">ANGRAU Agricultural Scientists</div>
+        <a href="tel:08632599401" class="btn btn-outline-success w-100 rounded-pill fs-6 fw-bold">
+          0863-2599401
+        </a>
+        <div class="small text-muted mt-2">Working Hours: 10 AM - 5 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="krishi-card p-4 p-md-5">
+        <h4 class="fw-bold text-success mb-2">Send Us an Agricultural Query or Feedback</h4>
+        <p class="text-muted small mb-4">Our agronomists and technical support team will respond within 24 business hours.</p>
+
+        <form onsubmit="alert('Thank you! Your feedback has been received. Our extension officer will follow up.'); return false;">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Your Name *</label>
+              <input type="text" class="form-control" placeholder="e.g. Venkat Rao" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Mobile Number *</label>
+              <input type="tel" class="form-control" placeholder="+91 98480 12345" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">District</label>
+              <input type="text" class="form-control" placeholder="e.g. Guntur" value="Guntur">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Topic</label>
+              <select class="form-select">
+                <option value="disease">Crop Disease Assistance</option>
+                <option value="irrigation">Irrigation Planning</option>
+                <option value="market">Marketplace / Price Query</option>
+                <option value="general">General Application Feedback</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Message</label>
+              <textarea class="form-control" rows="4" placeholder="Describe your question or difficulty..." required></textarea>
+            </div>
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn btn-krishi-primary w-100 py-2.5">
+                <i class="fa-solid fa-paper-plane me-1"></i> Send Message
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

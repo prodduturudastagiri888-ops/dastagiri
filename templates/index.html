@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}SMART KRISHI – Empowering Farmers, Growing a Better Future{% endblock %}
+
+{% block content %}
+<!-- Live Mandi Price Ticker -->
+<div class="mandi-ticker-bar">
+  <div class="container-fluid px-lg-4 d-flex align-items-center overflow-x-auto">
+    <span class="badge bg-success me-3 py-1 px-2 text-uppercase d-flex align-items-center gap-1">
+      <i class="fa-solid fa-bolt"></i> <span data-i18n="mandi_ticker_title">Mandi Ticker</span>
+    </span>
+    <div class="d-flex align-items-center">
+      {% for item in mandi_ticker %}
+        <span class="ticker-item">
+          <strong>{{ item.crop_name_en }} ({{ item.mandi_name }}):</strong> 
+          ₹{{ "{:,.0f}".format(item.modal_price) }}
+          {% if item.price_trend == 'up' %}
+            <span class="price-up"><i class="fa-solid fa-arrow-trend-up"></i> +{{ item.trend_pct }}%</span>
+          {% elif item.price_trend == 'down' %}
+            <span class="price-down"><i class="fa-solid fa-arrow-trend-down"></i> {{ item.trend_pct }}%</span>
+          {% else %}
+            <span class="text-secondary"><i class="fa-solid fa-minus"></i> Stable</span>
+          {% endif %}
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="krishi-hero">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <span class="hero-tagline" data-i18n="tagline">Empowering Farmers, Growing a Better Future.</span>
+        <h1 class="hero-heading">
+          SMART KRISHI <br>
+          <span style="color:#a7f3d0; font-weight:700;">Intelligent Farming Assistance System</span>
+        </h1>
+        <p class="hero-description">
+          A next-generation platform for Indian farmers to reduce crop losses, detect plant diseases early with AI, conserve irrigation water, check real-time mandi prices, and sell agricultural produce directly to buyers.
+        </p>
+
+        <div class="hero-cta-btns">
+          <a href="{{ url_for('crop_doctor') }}" class="btn btn-warning btn-lg px-4 py-2.5 fw-bold text-dark rounded-pill shadow-sm">
+            <i class="fa-solid fa-camera-retro me-2"></i> <span data-i18n="btn_diagnose">Diagnose Leaf Disease</span>
+          </a>
+          <a href="{{ url_for('weather') }}" class="btn btn-outline-light btn-lg px-4 py-2.5 fw-semibold rounded-pill">
+            <i class="fa-solid fa-cloud-sun me-2"></i> <span data-i18n="btn_check_weather">Check Weather</span>
+          </a>
+          {% if not current_user %}
+            <a href="{{ url_for('register') }}" class="btn btn-success btn-lg px-4 py-2.5 fw-bold rounded-pill">
+              <i class="fa-solid fa-user-plus me-2"></i> Join as Farmer
+            </a>
+          {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg px-4 py-2.5 fw-bold text-success rounded-pill">
+              <i class="fa-solid fa-gauge-high me-2"></i> Open Dashboard
+            </a>
+          {% endif %}
+        </div>
+
+        <div class="d-flex align-items-center gap-4 mt-4 pt-3 border-top border-white-50">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-warning fs-4"></i>
+            <span class="small text-light">ICAR & ANGRAU Agronomic Guidelines</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-language text-info fs-4"></i>
+            <span class="small text-light">Telugu & English Bilingual Interface</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Agromet Preview Card -->
+      <div class="col-lg-5">
+        <div class="weather-main-box shadow-lg">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <span class="badge bg-white text-success fw-bold px-3 py-1.5 rounded-pill mb-1">
+                <i class="fa-solid fa-location-dot me-1"></i> {{ weather.location }}, {{ weather.state }}
+              </span>
+              <div class="small text-white-50">{{ weather.last_updated }}</div>
+            </div>
+            <div class="text-end">
+              <span class="badge {% if weather.is_live_data %}bg-light text-dark{% else %}bg-warning text-dark{% endif %}">
+                {% if weather.is_live_data %}● Live Open-Meteo{% else %}● Agromet Data{% endif %}
+              </span>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between my-3">
+            <div>
+              <div class="weather-temp-big">{{ weather.current.temperature }}°C</div>
+              <div class="fw-semibold fs-5 text-warning">{{ weather.current.condition }}</div>
+              <div class="small text-light">Feels like {{ weather.current.feels_like }}°C</div>
+            </div>
+            <div class="text-center">
+              <i class="fa-solid fa-cloud-sun text-warning" style="font-size: 4.5rem;"></i>
+            </div>
+          </div>
+
+          <div class="row g-2 text-center pt-3 border-top border-white-50 small">
+            <div class="col-4">
+              <div class="text-white-50">Humidity</div>
+              <div class="fw-bold fs-6">{{ weather.current.humidity }}%</div>
+            </div>
+            <div class="col-4">
+              <div class="text-white-50">Rain Chance</div>
+              <div class="fw-bold fs-6">{{ weather.current.precipitation_probability }}%</div>
+            </div>
+            <div class="col-4">
+              <div class="text-white-50">Wind</div>
+              <div class="fw-bold fs-6">{{ weather.current.wind_speed }} km/h</div>
+            </div>
+          </div>
+
+          <div class="mt-3 text-center">
+            <a href="{{ url_for('weather') }}" class="btn btn-sm btn-light text-success fw-bold px-3 rounded-pill w-100">
+              View Detailed 7-Day Farm Forecast & Alerts →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Core Agricultural Modules Grid -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="badge bg-success-subtle text-success fw-bold px-3 py-1.5 rounded-pill text-uppercase">Farmer Solutions</span>
+      <h2 class="fw-bold text-success-emphasis mt-2">Comprehensive Farm Management Tools</h2>
+      <p class="text-muted max-w-600 mx-auto">Engineered to support smallholder and commercial farmers at every step from seed selection to produce marketing.</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- 1. AI Crop Doctor -->
+      <div class="col-lg-4 col-md-6">
+        <div class="krishi-card">
+          <div class="feature-icon-box feature-icon-green">
+            <i class="fa-solid fa-stethoscope"></i>
+          </div>
+          <h4 class="fw-bold text-success mb-2" data-i18n="nav_crop_doctor">AI Crop Doctor</h4>
+          <p class="text-muted small flex-grow-1">
+            Snap or upload a photo of affected crop leaves. Our computer vision pathology engine identifies blast, leaf curls, and blights, providing both chemical and zero-budget organic remedies.
+          </p>
+          <div class="mt-3">
+            <a href="{{ url_for('crop_doctor') }}" class="btn btn-krishi-secondary w-100 btn-sm">
+              <i class="fa-solid fa-upload me-1"></i> Diagnose Plant Disease
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Smart Weather & Alerts -->
+      <div class="col-lg-4 col-md-6">
+        <div class="krishi-card">
+          <div class="feature-icon-box feature-icon-blue">
+            <i class="fa-solid fa-cloud-bolt"></i>
+          </div>
+          <h4 class="fw-bold text-primary mb-2" data-i18n="nav_weather">Weather & Alerts</h4>
+          <p class="text-muted small flex-grow-1">
+            Village-level live weather with heavy rain, drought, and heatwave disaster alerts. Includes agromet recommendations on optimal spraying, weeding, and fertilizer application timings.
+          </p>
+          <div class="mt-3">
+            <a href="{{ url_for('weather') }}" class="btn btn-krishi-secondary w-100 btn-sm">
+              <i class="fa-solid fa-magnifying-glass me-1"></i> Village Forecast
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Smart Irrigation -->
+      <div class="col-lg-4 col-md-6">
+        <div class="krishi-card">
+          <div class="feature-icon-box feature-icon-blue">
+            <i class="fa-solid fa-faucet-drip"></i>
+          </div>
+          <h4 class="fw-bold text-info mb-2" data-i18n="nav_irrigation">Smart Irrigation</h4>
+          <p class="text-muted small flex-grow-1">
+            Stop over-irrigation. Calculate precise water volume in liters based on crop growth stage, soil water retention, recent rainfall, and your irrigation method (drip, sprinkler, furrow).
+          </p>
+          <div class="mt-3">
+            <a href="{{ url_for('irrigation') }}" class="btn btn-krishi-secondary w-100 btn-sm">
+              <i class="fa-solid fa-calculator me-1"></i> Calculate Water Plan
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Market Prices Intelligence -->
+      <div class="col-lg-4 col-md-6">
+        <div class="krishi-card">
+          <div class="feature-icon-box feature-icon-amber">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h4 class="fw-bold text-warning-emphasis mb-2" data-i18n="nav_market">Mandi Market Prices</h4>
+          <p class="text-muted small flex-grow-1">
+            Stay ahead of market middlemen. Daily modal, min, and max prices from Guntur Mirchi Yard, Warangal, Kurnool, and state mandis with historical price charts and nearby yard comparisons.
+          </p>
+          <div class="mt-3">
+            <a href="{{ url_for('market') }}" class="btn btn-krishi-secondary w-100 btn-sm">
+              <i class="fa-solid fa-arrow-trend-up me-1"></i> Track Mandi Rates
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Crop Advisor -->
+      <div class="col-lg-4 col-md-6">
+        <div class="krishi-card">
+          <div class="feature-icon-box feature-icon-green">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+          <h4 class="fw-bold text-success mb-2" data-i18n="nav_advisor">Crop Advisor</h4>
+          <p class="text-muted small flex-grow-1">
+            Input soil type, pH, NPK levels, planting season (Kharif/Rabi), and water availability to receive transparent agronomic crop recommendations with clear risk and limitation factors.
+          </p>
+          <div class="mt-3">
+            <a href="{{ url_for('advisor') }}" class="btn btn-krishi-secondary w-100 btn-sm">
+              <i class="fa-solid fa-compass me-1"></i> Recommend Crops
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Farmer-to-Buyer Marketplace -->
+      <div class="col-lg-4 col-md-6">
+        <div class="krishi-card">
+          <div class="feature-icon-box feature-icon-purple">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <h4 class="fw-bold text-purple mb-2" data-i18n="nav_marketplace">Direct Marketplace</h4>
+          <p class="text-muted small flex-grow-1">
+            List harvested paddy, chilli, turmeric, or cotton directly. Verified buyers and traders contact you safely without paying exploitative intermediary commissions.
+          </p>
+          <div class="mt-3">
+            <a href="{{ url_for('marketplace') }}" class="btn btn-krishi-secondary w-100 btn-sm">
+              <i class="fa-solid fa-bag-shopping me-1"></i> Explore Marketplace
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Additional Innovation Features Showcase -->
+<section class="py-5 bg-white border-top border-bottom">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <span class="badge bg-warning-subtle text-warning fw-bold px-3 py-1.5 rounded-pill text-uppercase">Unique Innovations</span>
+        <h2 class="fw-bold text-dark mt-2">Tailored for Indian Farming Realities</h2>
+        <p class="text-muted">Smart Krishi is engineered with inclusive features for farmers with limited literacy or low-speed internet connectivity.</p>
+
+        <div class="d-flex flex-column gap-3 mt-4">
+          <div class="d-flex gap-3">
+            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width:40px; height:40px; flex-shrink:0;">
+              <i class="fa-solid fa-microphone"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1">Voice-Friendly Interface & Audio Readout</h6>
+              <p class="text-muted small mb-0">Speak questions in Telugu or English. Listen to disease diagnosis and weather alerts via text-to-speech audio.</p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <div class="rounded-circle bg-primary text-white p-2 d-flex align-items-center justify-content-center" style="width:40px; height:40px; flex-shrink:0;">
+              <i class="fa-solid fa-wifi"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1">Low-Bandwidth Mode & Offline Advice</h6>
+              <p class="text-muted small mb-0">Toggle lightweight mode for 2G/3G speeds. Previously viewed farming advice remains accessible even without network.</p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <div class="rounded-circle bg-danger text-white p-2 d-flex align-items-center justify-content-center" style="width:40px; height:40px; flex-shrink:0;">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1">Crop Loss Assessment Tool for PMFBY Claims</h6>
+              <p class="text-muted small mb-0">Document cyclone, flood, or drought damage with survey numbers and photo evidence for official crop insurance filing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="p-3 border rounded-3 text-center bg-light">
+              <i class="fa-regular fa-calendar-check text-primary fs-2 mb-2"></i>
+              <h6 class="fw-bold mb-1">Farming Calendar</h6>
+              <p class="small text-muted mb-2">Sowing & fertilizer reminders</p>
+              <a href="{{ url_for('calendar') }}" class="btn btn-outline-primary btn-sm rounded-pill">View Calendar</a>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded-3 text-center bg-light">
+              <i class="fa-solid fa-calculator text-success fs-2 mb-2"></i>
+              <h6 class="fw-bold mb-1">Crop Expense Calc</h6>
+              <p class="small text-muted mb-2">Input costs vs profit return</p>
+              <a href="{{ url_for('calculator') }}" class="btn btn-outline-success btn-sm rounded-pill">Calculate ROI</a>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded-3 text-center bg-light">
+              <i class="fa-solid fa-landmark text-warning fs-2 mb-2"></i>
+              <h6 class="fw-bold mb-1">Govt Schemes</h6>
+              <p class="small text-muted mb-2">PM-KISAN, Rythu Bharosa</p>
+              <a href="{{ url_for('schemes') }}" class="btn btn-outline-warning btn-sm rounded-pill">Explore Schemes</a>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded-3 text-center bg-light">
+              <i class="fa-solid fa-flask text-danger fs-2 mb-2"></i>
+              <h6 class="fw-bold mb-1">Soil Health Card</h6>
+              <p class="small text-muted mb-2">Track NPK & pH over time</p>
+              <a href="{{ url_for('soil_health') }}" class="btn btn-outline-danger btn-sm rounded-pill">Log Soil Test</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="py-5" style="background: linear-gradient(135deg, #1b5e20, #0d3b17); color:white;">
+  <div class="container text-center py-3">
+    <h2 class="fw-bold mb-3">Empowering Over 10,000+ Indian Farmers</h2>
+    <p class="fs-5 text-light max-w-600 mx-auto mb-4">Join Smart Krishi today to access personalized weather advisories, free AI leaf diagnostics, and direct buyer market prices.</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg px-4 fw-bold rounded-pill shadow">
+        <i class="fa-solid fa-user-plus me-1"></i> Register Free Today
+      </a>
+      <a href="{{ url_for('chatbot') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold rounded-pill">
+        <i class="fa-solid fa-robot me-1"></i> Chat with Krishi Mitra
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

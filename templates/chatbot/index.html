@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Krishi Mitra AI Assistant – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="krishi-card p-0 overflow-hidden shadow">
+        <!-- Chat Header -->
+        <div class="p-3 bg-success text-white d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <div class="krishi-logo-icon bg-white text-success" style="width:44px; height:44px; font-size:1.3rem;">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0" data-i18n="chatbot_title">Krishi Mitra (కృషి మిత్ర)</h5>
+              <div class="small text-white-50">Multilingual AI Farming Companion • Online</div>
+            </div>
+          </div>
+          <span class="badge bg-light text-success fw-bold px-3 py-1.5 rounded-pill">Bilingual AI</span>
+        </div>
+
+        <!-- Chat History Box -->
+        <div id="chatMessagesContainer" class="p-4 overflow-y-auto" style="height: 440px; background: #fdfefd;">
+          <!-- Welcome message -->
+          <div class="d-flex gap-2 mb-3">
+            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width:36px; height:36px; flex-shrink:0;">
+              <i class="fa-solid fa-robot small"></i>
+            </div>
+            <div class="p-3 rounded-4 shadow-sm" style="max-width: 82%; background: #ffffff; border: 1px solid #e2ece3;">
+              <div class="fw-bold text-success small mb-1">Krishi Mitra AI</div>
+              <div class="chat-text small text-dark">
+                {% if current_lang == 'te' %}
+                  నమస్కారం! నేను మీ <strong>కృషి మిత్ర</strong>. పంట తెగుళ్లు (వరి అగ్గి తెగులు, మిరప ఆకు ముడుత), ఎరువుల మోతాదు, స్మార్ట్ నీటిపారుదల, ప్రభుత్వ పథకాలు లేదా మార్కెట్ ధరల గురించి మీ ప్రశ్నను అడగండి.
+                {% else %}
+                  Namaste! I am <strong>Krishi Mitra</strong>, your agricultural assistant. Ask me questions regarding crop pest remedies, fertilizer doses, smart irrigation schedules, PM-KISAN, or mandi price trends.
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pre-set Quick Question Chips -->
+        <div class="px-3 py-2 bg-light border-top border-bottom overflow-x-auto d-flex gap-2">
+          <button type="button" class="btn btn-outline-success btn-sm rounded-pill text-nowrap quick-chip" onclick="askQuickQuestion('Rice blast cure')">
+            🌾 Rice Blast Remedy
+          </button>
+          <button type="button" class="btn btn-outline-success btn-sm rounded-pill text-nowrap quick-chip" onclick="askQuickQuestion('Chilli leaf curl and thrips')">
+            🌶️ Chilli Leaf Curl
+          </button>
+          <button type="button" class="btn btn-outline-success btn-sm rounded-pill text-nowrap quick-chip" onclick="askQuickQuestion('How to apply fertilizer DAP and urea')">
+            🌱 Fertilizer Doses
+          </button>
+          <button type="button" class="btn btn-outline-success btn-sm rounded-pill text-nowrap quick-chip" onclick="askQuickQuestion('PM KISAN installment details')">
+            🏛️ PM-KISAN Portal
+          </button>
+        </div>
+
+        <!-- Input Bar with Voice Support -->
+        <div class="p-3 bg-white">
+          <form id="chatForm" onsubmit="sendChatMessage(event)" class="d-flex gap-2 align-items-center">
+            <!-- Voice Input Button -->
+            <button type="button" class="btn btn-outline-danger rounded-circle p-2" title="Speak question / మాట్లాడండి" onclick="krishiVoice.startListening('chatInput')" style="width:44px; height:44px; flex-shrink:0;">
+              <i class="fa-solid fa-microphone"></i>
+            </button>
+
+            <!-- Text Input -->
+            <input type="text" id="chatInput" class="form-control rounded-pill px-3" placeholder="Type or speak your farming question..." data-i18n="chat_placeholder" required autocomplete="off">
+
+            <!-- Send Button -->
+            <button type="submit" class="btn btn-krishi-primary rounded-pill px-4" style="flex-shrink:0;">
+              <i class="fa-solid fa-paper-plane me-1"></i> <span data-i18n="send_btn">Ask</span>
+            </button>
+          </form>
+
+          <div class="text-center mt-2" style="font-size: 0.72rem; color: #888;">
+            <i class="fa-solid fa-shield-halved text-success me-1"></i>
+            Advisory based on ICAR agronomy recommendations. For severe field emergencies, contact Kisan Helpline 1800-180-1551.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function askQuickQuestion(text) {
+    document.getElementById("chatInput").value = text;
+    document.getElementById("chatForm").dispatchEvent(new Event("submit"));
+  }
+
+  async function sendChatMessage(e) {
+    e.preventDefault();
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = "";
+    appendMessage("user", msg);
+
+    // Show typing loader
+    const typingId = appendTypingIndicator();
+
+    try {
+      const resp = await fetch("{{ url_for('api_chat') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, lang: localStorage.getItem("smart_krishi_lang") || "en" })
+      });
+      const data = await resp.json();
+      removeTypingIndicator(typingId);
+      appendMessage("bot", data.response);
+    } catch (err) {
+      removeTypingIndicator(typingId);
+      appendMessage("bot", "⚠️ Network connection interrupted. Please try again or check saved advice.");
+    }
+  }
+
+  function appendMessage(sender, text) {
+    const container = document.getElementById("chatMessagesContainer");
+    const isBot = sender === "bot";
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `d-flex gap-2 mb-3 ${isBot ? '' : 'justify-content-end'}`;
+
+    let iconHtml = isBot 
+      ? `<div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width:36px; height:36px; flex-shrink:0;"><i class="fa-solid fa-robot small"></i></div>` 
+      : '';
+
+    let audioBtn = isBot 
+      ? `<button class="btn btn-link btn-sm p-0 text-success ms-2" onclick="krishiVoice.speak(decodeURIComponent('${encodeURIComponent(text)}'))" title="Listen Audio"><i class="fa-solid fa-volume-high"></i></button>`
+      : '';
+
+    msgDiv.innerHTML = `
+      ${iconHtml}
+      <div class="p-3 rounded-4 shadow-sm" style="max-width: 82%; background: ${isBot ? '#ffffff' : '#1e7e34'}; color: ${isBot ? '#212529' : '#ffffff'}; border: ${isBot ? '1px solid #e2ece3' : 'none'};">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold small ${isBot ? 'text-success' : 'text-white-50'}">${isBot ? 'Krishi Mitra AI' : 'You'}</span>
+          ${audioBtn}
+        </div>
+        <div class="small">${text.replace(/\n/g, '<br>')}</div>
+      </div>
+    `;
+
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function appendTypingIndicator() {
+    const container = document.getElementById("chatMessagesContainer");
+    const id = "typing_" + Date.now();
+    const div = document.createElement("div");
+    div.id = id;
+    div.className = "d-flex gap-2 mb-3";
+    div.innerHTML = `
+      <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width:36px; height:36px; flex-shrink:0;"><i class="fa-solid fa-robot small"></i></div>
+      <div class="p-2.5 px-3 rounded-4 bg-light border small text-muted">
+        <span class="spinner-grow spinner-grow-sm text-success me-1"></span> Krishi Mitra is formulating agricultural advice...
+      </div>
+    `;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return id;
+  }
+
+  function removeTypingIndicator(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+</script>
+{% endblock %}

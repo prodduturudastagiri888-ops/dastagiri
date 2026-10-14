@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Government Agricultural Schemes – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-5">
+    <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-3 py-1.5 rounded-pill text-uppercase">Financial & Welfare Support</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="nav_schemes">Government Agricultural Schemes & Subsidies</h2>
+    <p class="text-muted max-w-600 mx-auto">
+      Official details, eligibility criteria, and direct application links for central and state farmer welfare initiatives.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Scheme 1: PM-KISAN -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="badge bg-success mb-1">Direct Benefit Transfer</span>
+            <h4 class="fw-bold text-dark mb-0">PM-KISAN Samman Nidhi</h4>
+            <div class="small text-muted">Ministry of Agriculture & Farmers Welfare, GoI</div>
+          </div>
+          <span class="fs-5 fw-bold text-success">₹6,000 / Year</span>
+        </div>
+        <p class="small text-muted mt-2">
+          Income support of ₹6,000 per year in three equal installments of ₹2,000 directly deposited into Aadhaar-seeded bank accounts of landholding farmer families.
+        </p>
+        <div class="p-2.5 bg-light rounded border small mb-3">
+          <strong>Key Requirements:</strong> Land records (Pattadar Passbook / 1-B), Aadhaar card, Active e-KYC status.
+        </div>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <span class="small text-muted"><i class="fa-solid fa-clock me-1"></i> Ongoing All Year</span>
+          <a href="https://pmkisan.gov.in" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm rounded-pill fw-semibold">
+            Official Portal <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scheme 2: PMFBY (Crop Insurance) -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="badge bg-primary mb-1">Risk Insurance</span>
+            <h4 class="fw-bold text-dark mb-0">Pradhan Mantri Fasal Bima Yojana (PMFBY)</h4>
+            <div class="small text-muted">Crop Loss Financial Protection</div>
+          </div>
+          <span class="fs-5 fw-bold text-primary">Up to 100% Loss</span>
+        </div>
+        <p class="small text-muted mt-2">
+          Comprehensive risk insurance against non-preventable natural risks (floods, cyclones, drought, unseasonal rain, pest outbreaks). Farmer premium only 1.5% - 2.0%.
+        </p>
+        <div class="p-2.5 bg-light rounded border small mb-3">
+          <strong>Key Requirements:</strong> Notify crop loss within 72 hours of damage via Krishi Loss Report tool or toll-free number.
+        </div>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <span class="small text-muted"><i class="fa-solid fa-bell me-1"></i> 72-Hour Intimation Window</span>
+          <a href="https://pmfby.gov.in" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold">
+            Claim Portal <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scheme 3: PM-KUSUM (Solar Pumps) -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="badge bg-warning text-dark mb-1">Energy & Irrigation</span>
+            <h4 class="fw-bold text-dark mb-0">PM-KUSUM Solar Pump Scheme</h4>
+            <div class="small text-muted">Ministry of New & Renewable Energy</div>
+          </div>
+          <span class="fs-5 fw-bold text-warning-emphasis">60% Subsidy</span>
+        </div>
+        <p class="small text-muted mt-2">
+          Subsidized solar-powered irrigation pumps (3 HP to 10 HP) enabling daytime farming irrigation independent of erratic electric grid supply and zero diesel costs.
+        </p>
+        <div class="p-2.5 bg-light rounded border small mb-3">
+          <strong>Key Requirements:</strong> Agricultural land title, borewell/water source with viable water table.
+        </div>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <span class="small text-muted">Daytime solar water supply</span>
+          <a href="https://pmkusum.mnre.gov.in" target="_blank" rel="noopener" class="btn btn-outline-warning btn-sm text-dark rounded-pill fw-semibold">
+            Apply Online <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scheme 4: Soil Health Card Scheme -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="badge bg-info text-white mb-1">Soil Fertility</span>
+            <h4 class="fw-bold text-dark mb-0">Soil Health Card Scheme</h4>
+            <div class="small text-muted">Department of Agriculture & Farmers Welfare</div>
+          </div>
+          <span class="fs-5 fw-bold text-info">Free Testing</span>
+        </div>
+        <p class="small text-muted mt-2">
+          Free soil nutrient testing (12 parameters: N, P, K, S, Zn, Fe, Cu, Mn, Bo, pH, EC, OC) conducted every 2 years with tailored chemical & organic fertilizer doses.
+        </p>
+        <div class="p-2.5 bg-light rounded border small mb-3">
+          <strong>Key Requirements:</strong> Submit soil core samples via local Village Agricultural Assistant (VAA) or Rythu Bharosa Kendra.
+        </div>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <span class="small text-muted">Save 20-30% fertilizer expense</span>
+          <a href="https://soilhealth.dac.gov.in" target="_blank" rel="noopener" class="btn btn-outline-info btn-sm rounded-pill fw-semibold">
+            Check Status <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

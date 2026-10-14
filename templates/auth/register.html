@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Registration – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="krishi-card p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="krishi-logo-icon mx-auto mb-3" style="width:56px; height:56px; font-size:1.8rem;">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h3 class="fw-bold text-success mb-1" data-i18n="nav_register">Create Smart Krishi Account</h3>
+          <p class="text-muted small">Register to receive village-specific weather alerts, personalized irrigation advice, and fair market access.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('register') }}">
+          <div class="row g-3">
+            <!-- Account Details -->
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">1. Personal Information</h6></div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Full Name (రైతు పేరు) *</label>
+              <input type="text" name="full_name" class="form-control" placeholder="e.g. Rama Rao K." required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Mobile Number *</label>
+              <input type="tel" name="phone" class="form-control" placeholder="+91 98480 12345" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Username *</label>
+              <input type="text" name="username" class="form-control" placeholder="ramarao_farmer" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email Address *</label>
+              <input type="email" name="email" class="form-control" placeholder="ramarao@gmail.com" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Password *</label>
+              <input type="password" name="password" class="form-control" placeholder="Minimum 6 characters" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Account Role</label>
+              <select name="role" class="form-select">
+                <option value="farmer" selected>Farmer (రైతు)</option>
+                <option value="buyer">Trader / Buyer (కొనుగోలుదారు)</option>
+              </select>
+            </div>
+
+            <!-- Farm Profile -->
+            <div class="col-12 mt-4"><h6 class="fw-bold text-success border-bottom pb-2">2. Farm & Location Details</h6></div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">State</label>
+              <select name="state" class="form-select">
+                <option value="Andhra Pradesh" selected>Andhra Pradesh</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">District (జిల్లా) *</label>
+              <input type="text" name="district" class="form-control" placeholder="e.g. Guntur, Warangal" value="Guntur" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Village / Mandal</label>
+              <input type="text" name="village" class="form-control" placeholder="e.g. Kollipara">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Land Size (Acres)</label>
+              <input type="number" step="0.5" name="land_size_acres" class="form-control" placeholder="3.5" value="3.0">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Primary Soil Type</label>
+              <select name="soil_type" class="form-select">
+                <option value="Black Cotton Soil">Black Cotton Soil (నల్లరేగడి)</option>
+                <option value="Red Loamy Soil">Red Loamy Soil (ఎర్ర నేల)</option>
+                <option value="Alluvial Soil">Alluvial Soil (ఒండ్రు నేల)</option>
+                <option value="Sandy Loam">Sandy Loam (ఇసుక నేల)</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Major Crops Grown</label>
+              <input type="text" name="primary_crops" class="form-control" placeholder="e.g. Paddy, Chilli, Cotton" value="Paddy, Chilli">
+            </div>
+          </div>
+
+          <div class="mt-4 pt-2">
+            <button type="submit" class="btn btn-krishi-primary w-100 py-2.5 fs-6">
+              <i class="fa-solid fa-check me-2"></i> Complete Registration & Open Dashboard
+            </button>
+          </div>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top small text-muted">
+          Already registered? 
+          <a href="{{ url_for('login') }}" class="text-success fw-bold text-decoration-none">Log in here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

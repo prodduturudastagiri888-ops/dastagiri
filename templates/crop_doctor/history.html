@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Diagnosis History – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <h3 class="fw-bold text-success mb-1">Crop Diagnosis History</h3>
+      <p class="text-muted small mb-0">Record of past leaf pathology scans conducted on your farm.</p>
+    </div>
+    <a href="{{ url_for('crop_doctor') }}" class="btn btn-krishi-primary btn-sm rounded-pill">
+      <i class="fa-solid fa-plus me-1"></i> New Diagnosis
+    </a>
+  </div>
+
+  {% if records %}
+    <div class="row g-4">
+      {% for item in records %}
+        <div class="col-lg-6">
+          <div class="krishi-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-secondary">{{ item.crop_name }}</span>
+              <span class="small text-muted">{{ item.created_at }}</span>
+            </div>
+            <h5 class="fw-bold text-dark mb-1">
+              {% if current_lang == 'te' %}{{ item.predicted_disease_te }}{% else %}{{ item.predicted_disease_en }}{% endif %}
+            </h5>
+            <div class="small mb-3">
+              Confidence: <strong class="text-success">{{ item.confidence }}%</strong> | Severity: <strong class="text-danger">{{ item.severity }}</strong>
+            </div>
+
+            <div class="p-2 bg-light rounded border small text-muted mb-3">
+              <strong>Chemical Spray:</strong> 
+              {% if current_lang == 'te' %}{{ item.remedies_chemical_te }}{% else %}{{ item.remedies_chemical_en }}{% endif %}
+            </div>
+
+            <div class="p-2 bg-success-subtle rounded border border-success-subtle small text-success-emphasis">
+              <strong>Organic Remedy:</strong> 
+              {% if current_lang == 'te' %}{{ item.remedies_organic_te }}{% else %}{{ item.remedies_organic_en }}{% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5 text-muted">
+      <i class="fa-solid fa-folder-open fs-1 mb-2"></i>
+      <h5>No Past Diagnoses Found</h5>
+      <p class="small">Upload an affected crop leaf to record your first diagnosis.</p>
+      <a href="{{ url_for('crop_doctor') }}" class="btn btn-success btn-sm rounded-pill">Scan Leaf Now</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

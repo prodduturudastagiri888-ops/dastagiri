@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Soil Health Records Tracker – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <span class="badge bg-danger-subtle text-danger fw-bold px-3 py-1.5 rounded-pill text-uppercase">Soil Fertility Tracking</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="nav_soil_health">Soil Health Records & Card Tracker</h2>
+    <p class="text-muted max-w-600 mx-auto">
+      Record chemical soil test results (pH, Organic Carbon, Nitrogen, Phosphorus, Potassium) to monitor nutrient depletion and apply balanced fertilization.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Log New Soil Test Form -->
+    <div class="col-lg-4">
+      <div class="krishi-card">
+        <h5 class="fw-bold text-danger mb-3">
+          <i class="fa-solid fa-flask-vial me-2"></i> Log Soil Test Result
+        </h5>
+
+        <form method="POST" action="{{ url_for('soil_health') }}">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Sample ID / Card Number</label>
+            <input type="text" name="sample_id" class="form-control" placeholder="e.g. SHC-AP-2026-44">
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Test Date</label>
+              <input type="date" name="test_date" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Soil Type</label>
+              <select name="soil_type" class="form-select">
+                <option value="Black Cotton Soil">Black Cotton</option>
+                <option value="Red Loamy Soil">Red Loam</option>
+                <option value="Alluvial Soil">Alluvial</option>
+                <option value="Sandy Loam">Sandy</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">pH Level (6.5 - 7.5)</label>
+              <input type="number" step="0.1" name="ph_level" class="form-control" value="7.2" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Organic Carbon %</label>
+              <input type="number" step="0.05" name="organic_carbon_pct" class="form-control" value="0.55">
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted small text-uppercase border-bottom pb-1 mb-2">Available Macronutrients (kg / ha)</h6>
+          <div class="row g-2 mb-3">
+            <div class="col-4">
+              <label class="form-label small fw-semibold">Nitrogen (N)</label>
+              <input type="number" step="5" name="nitrogen_kg_ha" class="form-control form-control-sm" value="210">
+            </div>
+            <div class="col-4">
+              <label class="form-label small fw-semibold">Phosphorus (P)</label>
+              <input type="number" step="1" name="phosphorus_kg_ha" class="form-control form-control-sm" value="28">
+            </div>
+            <div class="col-4">
+              <label class="form-label small fw-semibold">Potassium (K)</label>
+              <input type="number" step="5" name="potassium_kg_ha" class="form-control form-control-sm" value="340">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Scientist Recommendations</label>
+            <textarea name="recommendations" class="form-control" rows="2" placeholder="e.g. Supplement with green manure, apply Zinc sulphate 25kg/acre..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-krishi-primary w-100 py-2.5">
+            <i class="fa-solid fa-save me-1"></i> Save Soil Record
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Soil Health History List -->
+    <div class="col-lg-8">
+      <div class="krishi-card">
+        <h5 class="fw-bold text-dark mb-3">
+          <i class="fa-solid fa-clock-rotate-left text-success me-2"></i> Soil Health History
+        </h5>
+
+        {% if records %}
+          <div class="d-flex flex-column gap-3">
+            {% for item in records %}
+              <div class="p-3 bg-light rounded-3 border">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <span class="badge bg-danger me-2">{{ item.sample_id }}</span>
+                    <strong class="text-dark">{{ item.soil_type }}</strong>
+                  </div>
+                  <span class="small text-muted"><i class="fa-regular fa-calendar me-1"></i> Tested: {{ item.test_date }}</span>
+                </div>
+
+                <div class="row g-2 text-center my-2">
+                  <div class="col-3">
+                    <div class="p-2 bg-white rounded border">
+                      <div class="small text-muted" style="font-size: 0.72rem;">pH Level</div>
+                      <div class="fw-bold text-dark fs-6">{{ item.ph_level }}</div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="p-2 bg-white rounded border">
+                      <div class="small text-muted" style="font-size: 0.72rem;">Available N</div>
+                      <div class="fw-bold text-primary fs-6">{{ item.nitrogen_kg_ha }} kg/ha</div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="p-2 bg-white rounded border">
+                      <div class="small text-muted" style="font-size: 0.72rem;">Available P</div>
+                      <div class="fw-bold text-success fs-6">{{ item.phosphorus_kg_ha }} kg/ha</div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="p-2 bg-white rounded border">
+                      <div class="small text-muted" style="font-size: 0.72rem;">Available K</div>
+                      <div class="fw-bold text-info fs-6">{{ item.potassium_kg_ha }} kg/ha</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="small text-muted mt-2 pt-2 border-top">
+                  <strong>Agronomist Advice:</strong> 
+                  {% if current_lang == 'te' %}{{ item.recommendations_te }}{% else %}{{ item.recommendations_en }}{% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-5 text-muted">
+            <i class="fa-solid fa-flask-vial fs-1 mb-2"></i>
+            <h5>No Soil Tests Logged Yet</h5>
+            <p class="small">Enter your Soil Health Card test values on the left to track nutrient trends.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

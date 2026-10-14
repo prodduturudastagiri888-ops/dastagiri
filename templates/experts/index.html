@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Agricultural Experts & KVK Scientists Directory – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <span class="badge bg-info-subtle text-info fw-bold px-3 py-1.5 rounded-pill text-uppercase">Verified Scientific Extension</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="nav_experts">Agricultural Experts & KVK Scientists Directory</h2>
+    <p class="text-muted max-w-600 mx-auto">
+      Connect directly with verified plant pathologists, agronomists, and government extension officers for on-field advice.
+    </p>
+  </div>
+
+  <!-- District Filter -->
+  <div class="d-flex justify-content-center mb-4">
+    <div class="btn-group" role="group">
+      <a href="{{ url_for('experts', district='all') }}" class="btn btn-sm {% if selected_district == 'all' %}btn-success{% else %}btn-outline-success{% endif %}">All Districts</a>
+      <a href="{{ url_for('experts', district='Guntur') }}" class="btn btn-sm {% if selected_district == 'Guntur' %}btn-success{% else %}btn-outline-success{% endif %}">Guntur (AP)</a>
+      <a href="{{ url_for('experts', district='Warangal') }}" class="btn btn-sm {% if selected_district == 'Warangal' %}btn-success{% else %}btn-outline-success{% endif %}">Warangal (TS)</a>
+      <a href="{{ url_for('experts', district='National') }}" class="btn btn-sm {% if selected_district == 'National' %}btn-success{% else %}btn-outline-success{% endif %}">National Helpline</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {% for expert in experts %}
+      <div class="col-lg-6">
+        <div class="krishi-card">
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="krishi-logo-icon" style="width:54px; height:54px; font-size:1.5rem; flex-shrink:0;">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div>
+              <span class="badge bg-success-subtle text-success small mb-1">{{ expert.district }}, {{ expert.state }}</span>
+              <h5 class="fw-bold text-dark mb-0">
+                {% if current_lang == 'te' %}{{ expert.name_te }}{% else %}{{ expert.name_en }}{% endif %}
+              </h5>
+              <div class="text-primary small fw-semibold">
+                {% if current_lang == 'te' %}{{ expert.designation_te }}{% else %}{{ expert.designation_en }}{% endif %}
+              </div>
+              <div class="text-muted small">
+                {% if current_lang == 'te' %}{{ expert.organization_te }}{% else %}{{ expert.organization_en }}{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2.5 bg-light rounded border small mb-3">
+            <strong>Specialization:</strong> 
+            {% if current_lang == 'te' %}{{ expert.specialization_te }}{% else %}{{ expert.specialization_en }}{% endif %}
+            <div class="text-muted mt-1" style="font-size: 0.78rem;">
+              <i class="fa-regular fa-clock me-1"></i> Available Hours: {{ expert.available_hours }}
+            </div>
+          </div>
+
+          <div class="mt-auto d-flex flex-wrap gap-2 pt-2 border-top">
+            <a href="tel:{{ expert.phone }}" class="btn btn-success btn-sm rounded-pill flex-grow-1">
+              <i class="fa-solid fa-phone me-1"></i> Call {{ expert.phone }}
+            </a>
+            {% if expert.whatsapp %}
+              <a href="https://wa.me/{{ expert.whatsapp|replace(' ', '')|replace('+', '') }}" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm rounded-pill">
+                <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
+              </a>
+            {% endif %}
+            {% if expert.email %}
+              <a href="mailto:{{ expert.email }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                <i class="fa-regular fa-envelope"></i>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

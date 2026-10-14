@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Crop Expense & Profit Calculator – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <span class="badge bg-success-subtle text-success fw-bold px-3 py-1.5 rounded-pill text-uppercase">Farm Economics</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="nav_calculator">Crop Expense & Profit Calculator</h2>
+    <p class="text-muted max-w-600 mx-auto">
+      Estimate your total seasonal cultivation costs (seeds, fertilizers, labor, machinery) against expected market returns to calculate your net profit and ROI.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Calculator Input Form -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <h5 class="fw-bold text-success mb-3">
+          <i class="fa-solid fa-file-invoice-dollar me-2"></i> Input Costs Breakdown
+        </h5>
+
+        <form method="POST" action="{{ url_for('calculator') }}">
+          <div class="row g-2 mb-3">
+            <div class="col-8">
+              <label class="form-label fw-semibold">Crop Name</label>
+              <input type="text" name="crop" class="form-control" value="{{ form.crop }}" required>
+            </div>
+            <div class="col-4">
+              <label class="form-label fw-semibold">Acres</label>
+              <input type="number" step="0.5" min="0.5" name="acres" class="form-control" value="{{ form.acres }}" required>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted border-bottom pb-1 mb-2 small text-uppercase">Cultivation Inputs (₹ Total)</h6>
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label small fw-semibold">1. Seed & Nursery (విత్తనాలు)</label>
+              <input type="number" name="seed_cost" class="form-control form-control-sm" value="{{ form.seed_cost }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">2. Fertilizer & Manure (ఎరువులు)</label>
+              <input type="number" name="fertilizer_cost" class="form-control form-control-sm" value="{{ form.fertilizer_cost }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">3. Pesticides & Sprays (మందులు)</label>
+              <input type="number" name="pesticide_cost" class="form-control form-control-sm" value="{{ form.pesticide_cost }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">4. Irrigation & Fuel/Electricity</label>
+              <input type="number" name="irrigation_cost" class="form-control form-control-sm" value="{{ form.irrigation_cost }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">5. Tractor & Machinery Hire</label>
+              <input type="number" name="machinery_cost" class="form-control form-control-sm" value="{{ form.machinery_cost }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">6. Labor & Harvesting (కూలీలు)</label>
+              <input type="number" name="labor_cost" class="form-control form-control-sm" value="{{ form.labor_cost }}">
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted border-bottom pb-1 mb-2 small text-uppercase mt-3">Expected Production & Price</h6>
+          <div class="row g-2 mb-4">
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Total Yield (Quintals)</label>
+              <input type="number" step="1" name="expected_yield_quintals" class="form-control form-control-sm" value="{{ form.expected_yield_quintals }}" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Expected Price (₹ / Quintal)</label>
+              <input type="number" step="50" name="expected_price_per_quintal" class="form-control form-control-sm" value="{{ form.expected_price_per_quintal }}" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-krishi-primary w-100 py-2">
+            <i class="fa-solid fa-calculator me-1"></i> Compute Profit & Expense Breakdown
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Results & Chart -->
+    <div class="col-lg-6">
+      {% if calculation %}
+        <div class="krishi-card border-success">
+          <div class="d-flex justify-content-between align-items-center pb-2 border-bottom mb-3">
+            <h5 class="fw-bold text-dark mb-0">Financial Return Summary</h5>
+            <span class="badge {% if calculation.is_profitable %}bg-success{% else %}bg-danger{% endif %} fs-6 px-3 py-1.5 rounded-pill">
+              ROI: {{ calculation.roi_percentage }}%
+            </span>
+          </div>
+
+          <!-- Key Metrics Grid -->
+          <div class="row g-2 text-center mb-3">
+            <div class="col-4">
+              <div class="p-2 bg-light rounded border">
+                <div class="small text-muted" style="font-size:0.75rem;">Total Expense</div>
+                <div class="fw-bold text-danger fs-6">₹{{ "{:,.0f}".format(calculation.total_cost) }}</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 bg-light rounded border">
+                <div class="small text-muted" style="font-size:0.75rem;">Gross Revenue</div>
+                <div class="fw-bold text-primary fs-6">₹{{ "{:,.0f}".format(calculation.expected_revenue) }}</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 {% if calculation.is_profitable %}bg-success-subtle{% else %}bg-danger-subtle{% endif %} rounded border">
+                <div class="small text-muted" style="font-size:0.75rem;">Net Profit</div>
+                <div class="fw-bold {% if calculation.is_profitable %}text-success{% else %}text-danger{% endif %} fs-6">
+                  ₹{{ "{:,.0f}".format(calculation.net_profit) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between small text-muted px-1 mb-3">
+            <span>Cost per Acre: <strong>₹{{ "{:,.0f}".format(calculation.cost_per_acre) }}</strong></span>
+            <span>Net Profit per Acre: <strong class="text-success">₹{{ "{:,.0f}".format(calculation.profit_per_acre) }}</strong></span>
+          </div>
+
+          <!-- Chart.js Expense Doughnut -->
+          <h6 class="fw-bold text-dark mb-2 small text-uppercase">Expense Distribution</h6>
+          <div style="height: 200px;">
+            <canvas id="expenseDoughnutChart"></canvas>
+          </div>
+        </div>
+      {% else %}
+        <div class="krishi-card d-flex flex-column align-items-center justify-content-center text-center p-5">
+          <i class="fa-solid fa-chart-pie text-success fs-1 mb-3"></i>
+          <h4 class="fw-bold text-dark">Farm Budget Calculator</h4>
+          <p class="text-muted small max-w-400">
+            Enter your seasonal crop input costs on the left to calculate gross revenue, net profit per acre, and cost ratios.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if calculation %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const costs = {
+      seed: {{ form.seed_cost }},
+      fertilizer: {{ form.fertilizer_cost }},
+      pesticide: {{ form.pesticide_cost }},
+      irrigation: {{ form.irrigation_cost }},
+      machinery: {{ form.machinery_cost }},
+      labor: {{ form.labor_cost }}
+    };
+    initExpenseChart('expenseDoughnutChart', costs);
+  });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Dashboard – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Top Welcome & Location Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-3">
+    <div>
+      <span class="badge bg-success-subtle text-success fw-bold px-3 py-1.5 rounded-pill mb-1">
+        <i class="fa-solid fa-circle-check me-1"></i> Farmer Profile Active
+      </span>
+      <h2 class="fw-bold text-success-emphasis mb-0">
+        <span data-i18n="greeting">Welcome</span>, {{ current_user.full_name }}!
+      </h2>
+      <div class="text-muted small mt-1">
+        <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ profile.village }}, {{ profile.district }}, {{ profile.state }} | 
+        <i class="fa-solid fa-mountain-sun text-success ms-2 me-1"></i> {{ profile.land_size_acres }} Acres ({{ profile.soil_type }})
+      </div>
+    </div>
+
+    <!-- Quick Action Shortcut Buttons -->
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('crop_doctor') }}" class="btn btn-warning fw-bold text-dark btn-sm rounded-pill px-3 shadow-sm">
+        <i class="fa-solid fa-camera-retro me-1"></i> Diagnose Leaf
+      </a>
+      <a href="{{ url_for('weather') }}" class="btn btn-primary fw-semibold btn-sm rounded-pill px-3 shadow-sm">
+        <i class="fa-solid fa-cloud-sun me-1"></i> Weather Alert
+      </a>
+      <a href="{{ url_for('irrigation') }}" class="btn btn-info text-white fw-semibold btn-sm rounded-pill px-3 shadow-sm">
+        <i class="fa-solid fa-droplet me-1"></i> Water Plan
+      </a>
+      <a href="{{ url_for('marketplace_sell') }}" class="btn btn-success fw-bold btn-sm rounded-pill px-3 shadow-sm">
+        <i class="fa-solid fa-tag me-1"></i> Sell Produce
+      </a>
+    </div>
+  </div>
+
+  <!-- Row 1: Weather + Irrigation Alert + Urgent Notifications -->
+  <div class="row g-4 mb-4">
+    <!-- Weather Widget -->
+    <div class="col-lg-4 col-md-6">
+      <div class="weather-main-box h-100 shadow-sm d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h5 class="fw-bold mb-0 text-white"><i class="fa-solid fa-cloud-sun-rain me-2"></i> {{ weather.location }}</h5>
+              <div class="small text-white-50">{{ weather.last_updated }}</div>
+            </div>
+            <span class="badge {% if weather.is_live_data %}bg-light text-dark{% else %}bg-warning text-dark{% endif %}">
+              {% if weather.is_live_data %}Live Open-Meteo{% else %}Agromet Demo{% endif %}
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between my-3">
+            <div>
+              <div class="weather-temp-big">{{ weather.current.temperature }}°C</div>
+              <div class="fw-semibold text-warning fs-5">{{ weather.current.condition }}</div>
+              <div class="small text-light">Humidity: {{ weather.current.humidity }}% | Rain Prob: {{ weather.current.precipitation_probability }}%</div>
+            </div>
+            <i class="fa-solid fa-sun text-warning" style="font-size: 3.5rem;"></i>
+          </div>
+        </div>
+
+        <div class="pt-2 border-top border-white-50">
+          <div class="small text-light mb-2">
+            <strong>Advisory:</strong> 
+            {% if current_lang == 'te' %}
+              {{ weather.farming_advisory_te[0] }}
+            {% else %}
+              {{ weather.farming_advisory_en[0] }}
+            {% endif %}
+          </div>
+          <a href="{{ url_for('weather') }}" class="btn btn-sm btn-light text-success fw-bold w-100 rounded-pill">
+            Full 7-Day Forecast & Rain Warnings →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Irrigation Plan & Reminders -->
+    <div class="col-lg-4 col-md-6">
+      <div class="krishi-card">
+        <div class="krishi-card-header">
+          <h5 class="krishi-card-title text-info">
+            <i class="fa-solid fa-faucet-drip text-info"></i> <span data-i18n="irrigation_reminder">Irrigation Reminder</span>
+          </h5>
+          <span class="badge bg-info-subtle text-info fw-bold">Daily Plan</span>
+        </div>
+        <div class="flex-grow-1">
+          <div class="p-3 bg-light rounded-3 mb-3 border">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold text-dark">Primary Crop: Chilli & Paddy</span>
+              <span class="badge bg-success">Drip Mode Active</span>
+            </div>
+            <div class="fs-4 fw-bold text-primary mb-1">~12,500 Liters / Cycle</div>
+            <div class="small text-muted">Interval: Every 2-3 Days (Morning 6:30 AM - 8:00 AM)</div>
+          </div>
+          <p class="small text-muted mb-0">
+            <i class="fa-solid fa-circle-info text-info me-1"></i> Based on your {{ profile.soil_type }} with good retention. Operating drip saves up to 55% water over conventional flooding.
+          </p>
+        </div>
+        <div class="mt-3">
+          <a href="{{ url_for('irrigation') }}" class="btn btn-outline-info btn-sm w-100 rounded-pill fw-semibold">
+            Adjust Field Area & Soil Parameters →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Urgent Farm Alerts & Notifications -->
+    <div class="col-lg-4 col-md-12">
+      <div class="krishi-card">
+        <div class="krishi-card-header">
+          <h5 class="krishi-card-title text-danger">
+            <i class="fa-solid fa-bell text-danger"></i> <span data-i18n="urgent_alerts">Farm Alerts</span>
+          </h5>
+          <span class="badge bg-danger rounded-pill">{{ notifications|length }}</span>
+        </div>
+        <div class="flex-grow-1 overflow-auto" style="max-height: 230px;">
+          {% for notif in notifications %}
+            <div class="p-2 mb-2 rounded border-start border-3 {% if notif.category == 'weather' %}border-warning bg-warning-subtle{% elif notif.category == 'market' %}border-success bg-success-subtle{% else %}border-primary bg-light{% endif %}">
+              <div class="fw-bold small text-dark">
+                {% if current_lang == 'te' %}{{ notif.title_te }}{% else %}{{ notif.title_en }}{% endif %}
+              </div>
+              <div class="text-muted" style="font-size: 0.8rem;">
+                {% if current_lang == 'te' %}{{ notif.message_te }}{% else %}{{ notif.message_en }}{% endif %}
+              </div>
+              {% if notif.action_url %}
+                <a href="{{ notif.action_url }}" class="small fw-semibold text-decoration-none">View Details →</a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Farming Calendar Tasks + Mandi Prices Intelligence -->
+  <div class="row g-4">
+    <!-- Scheduled Farming Tasks (Calendar) -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <div class="krishi-card-header">
+          <h5 class="krishi-card-title text-success">
+            <i class="fa-regular fa-calendar-check text-success"></i> <span data-i18n="upcoming_tasks">Scheduled Farming Tasks</span>
+          </h5>
+          <a href="{{ url_for('calendar') }}" class="small text-success fw-bold text-decoration-none">+ Add Task</a>
+        </div>
+        <div class="flex-grow-1">
+          {% if tasks %}
+            <div class="list-group list-group-flush">
+              {% for task in tasks %}
+                <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <a href="{{ url_for('calendar_toggle', task_id=task.id) }}" class="text-decoration-none">
+                      {% if task.status == 'completed' %}
+                        <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                      {% else %}
+                        <i class="fa-regular fa-circle text-muted fs-5"></i>
+                      {% endif %}
+                    </a>
+                    <div>
+                      <div class="fw-semibold {% if task.status == 'completed' %}text-decoration-line-through text-muted{% endif %}">
+                        {% if current_lang == 'te' %}{{ task.task_title_te }}{% else %}{{ task.task_title_en }}{% endif %}
+                      </div>
+                      <div class="small text-muted">
+                        <span class="badge bg-secondary-subtle text-secondary me-1">{{ task.crop_name }}</span>
+                        Due: {{ task.scheduled_date }}
+                      </div>
+                    </div>
+                  </div>
+                  <span class="badge {% if task.priority == 'high' %}bg-danger{% elif task.priority == 'medium' %}bg-warning text-dark{% else %}bg-info{% endif %}">
+                    {{ task.priority|capitalize }}
+                  </span>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-4 text-muted">
+              <i class="fa-regular fa-calendar-days fs-1 mb-2"></i>
+              <p class="small">No pending tasks. Keep track of fertilizer and harvest dates.</p>
+              <a href="{{ url_for('calendar') }}" class="btn btn-sm btn-outline-success rounded-pill">Add First Task</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Market Prices Ticker Table -->
+    <div class="col-lg-6">
+      <div class="krishi-card">
+        <div class="krishi-card-header">
+          <h5 class="krishi-card-title text-warning-emphasis">
+            <i class="fa-solid fa-chart-line text-warning"></i> <span>Mandi Rates in Your Region</span>
+          </h5>
+          <a href="{{ url_for('market') }}" class="small text-success fw-bold text-decoration-none">Full Mandi List →</a>
+        </div>
+        <div class="table-responsive flex-grow-1">
+          <table class="table table-sm table-hover align-middle mb-0">
+            <thead class="table-light small">
+              <tr>
+                <th>Crop</th>
+                <th>Mandi Yard</th>
+                <th>Modal Price</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rate in market_rates %}
+                <tr>
+                  <td>
+                    <span class="fw-semibold">
+                      {% if current_lang == 'te' %}{{ rate.crop_name_te }}{% else %}{{ rate.crop_name_en }}{% endif %}
+                    </span>
+                  </td>
+                  <td class="small text-muted">{{ rate.mandi_name }}</td>
+                  <td class="fw-bold text-success">₹{{ "{:,.0f}".format(rate.modal_price) }} / Qtl</td>
+                  <td>
+                    {% if rate.price_trend == 'up' %}
+                      <span class="badge bg-success-subtle text-success"><i class="fa-solid fa-arrow-trend-up"></i> +{{ rate.trend_pct }}%</span>
+                    {% elif rate.price_trend == 'down' %}
+                      <span class="badge bg-danger-subtle text-danger"><i class="fa-solid fa-arrow-trend-down"></i> {{ rate.trend_pct }}%</span>
+                    {% else %}
+                      <span class="badge bg-secondary-subtle text-secondary">Stable</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Quick Diagnostics / Active Crops -->
+  <div class="row g-4 mt-1">
+    <div class="col-12">
+      <div class="krishi-card bg-light">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="feature-icon-box feature-icon-green mb-0" style="width:48px; height:48px;">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold text-success mb-1">Need Immediate Agricultural Assistance?</h5>
+              <p class="text-muted small mb-0">Ask Krishi Mitra AI for fertilizer doses, pest solutions, or speak with KVK scientists directly.</p>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('chatbot') }}" class="btn btn-krishi-primary btn-sm rounded-pill px-3">
+              <i class="fa-solid fa-comments me-1"></i> Open Krishi Mitra AI
+            </a>
+            <a href="{{ url_for('experts') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+              <i class="fa-solid fa-phone me-1"></i> Call KVK Scientist
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

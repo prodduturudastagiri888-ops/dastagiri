@@ -1,0 +1,421 @@
+/* Smart Krishi - Modern Agricultural Green & White Theme */
+
+:root {
+  --krishi-primary: #1e7e34;
+  --krishi-primary-dark: #145a24;
+  --krishi-primary-light: #48b060;
+  --krishi-accent: #f9a825;
+  --krishi-accent-dark: #f57f17;
+  --krishi-bg: #f7faf7;
+  --krishi-card-bg: #ffffff;
+  --krishi-text-main: #212529;
+  --krishi-text-muted: #5a6268;
+  --krishi-border: #e2ece3;
+  --krishi-border-hover: #b7deb9;
+  --krishi-shadow: 0 4px 14px rgba(30, 126, 52, 0.08);
+  --krishi-shadow-hover: 0 8px 24px rgba(30, 126, 52, 0.16);
+  --krishi-radius: 14px;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--krishi-bg);
+  color: var(--krishi-text-main);
+  line-height: 1.6;
+  font-size: 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Telugu font optimization */
+[lang="te"] body, .telugu-font {
+  font-family: 'Mandali', 'Ramabhadra', 'Noto Sans Telugu', system-ui, sans-serif;
+  line-height: 1.8;
+}
+
+/* Header & Navbar */
+.krishi-navbar {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  padding: 0.75rem 0;
+  border-bottom: 2px solid #e2ece3;
+}
+
+.krishi-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.krishi-logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--krishi-primary), var(--krishi-primary-dark));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  box-shadow: 0 3px 8px rgba(30, 126, 52, 0.3);
+}
+
+.krishi-brand-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--krishi-primary-dark);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.krishi-brand-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+}
+
+.nav-link {
+  font-weight: 600;
+  color: #38423b !important;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--krishi-primary) !important;
+  background-color: #eef7ef;
+}
+
+/* Language and Accessibility Controls */
+.top-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-lang {
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 4px 12px;
+  border: 1.5px solid var(--krishi-primary);
+  color: var(--krishi-primary);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.btn-lang.active, .btn-lang:hover {
+  background: var(--krishi-primary);
+  color: white;
+}
+
+/* Hero Section */
+.krishi-hero {
+  background: linear-gradient(135deg, #0d3b17 0%, #1b5e20 60%, #2e7d32 100%);
+  color: #ffffff;
+  padding: 4.5rem 0 4rem 0;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 4px solid var(--krishi-accent);
+}
+
+.krishi-hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-tagline {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffe082;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 14px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 224, 130, 0.3);
+}
+
+.hero-heading {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+}
+
+.hero-description {
+  font-size: 1.15rem;
+  color: #e8f5e9;
+  max-width: 620px;
+  margin-bottom: 2rem;
+}
+
+.hero-cta-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Mandi Ticker */
+.mandi-ticker-bar {
+  background-color: #0b2b11;
+  color: #e8f5e9;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 24px;
+  white-space: nowrap;
+}
+
+.price-up {
+  color: #4caf50;
+  font-weight: 700;
+}
+
+.price-down {
+  color: #ef5350;
+  font-weight: 700;
+}
+
+/* Cards & Content Blocks */
+.krishi-card {
+  background: var(--krishi-card-bg);
+  border: 1px solid var(--krishi-border);
+  border-radius: var(--krishi-radius);
+  box-shadow: var(--krishi-shadow);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.krishi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--krishi-shadow-hover);
+  border-color: var(--krishi-border-hover);
+}
+
+.krishi-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f0f4f0;
+}
+
+.krishi-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #145a24;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Feature Icons */
+.feature-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.feature-icon-green { background: #e8f5e9; color: #2e7d32; }
+.feature-icon-amber { background: #fff8e1; color: #f57f17; }
+.feature-icon-blue { background: #e1f5fe; color: #0288d1; }
+.feature-icon-purple { background: #f3e5f5; color: #7b1fa2; }
+
+/* Buttons */
+.btn-krishi-primary {
+  background: linear-gradient(135deg, var(--krishi-primary), var(--krishi-primary-dark));
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(30, 126, 52, 0.25);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-krishi-primary:hover {
+  background: linear-gradient(135deg, var(--krishi-primary-dark), #0f421a);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(30, 126, 52, 0.35);
+}
+
+.btn-krishi-secondary {
+  background: #ffffff;
+  color: var(--krishi-primary-dark);
+  border: 1.5px solid var(--krishi-primary);
+  font-weight: 600;
+  padding: 0.65rem 1.35rem;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.btn-krishi-secondary:hover {
+  background: #eef7ef;
+  color: var(--krishi-primary-dark);
+}
+
+/* Agricultural Metric Badges */
+.badge-severe { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; font-weight: 600; }
+.badge-warning { background-color: #fff8e1; color: #f57f17; border: 1px solid #ffe082; font-weight: 600; }
+.badge-healthy { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; font-weight: 600; }
+.badge-info { background-color: #e1f5fe; color: #0277bd; border: 1px solid #b3e5fc; font-weight: 600; }
+
+/* Weather Widget */
+.weather-main-box {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  color: white;
+  border-radius: var(--krishi-radius);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-temp-big {
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Upload Dropzone */
+.krishi-dropzone {
+  border: 2px dashed #81c784;
+  background-color: #f7faf7;
+  border-radius: var(--krishi-radius);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.krishi-dropzone:hover, .krishi-dropzone.dragover {
+  border-color: var(--krishi-primary);
+  background-color: #eef7ef;
+}
+
+.dropzone-icon {
+  font-size: 3rem;
+  color: var(--krishi-primary);
+  margin-bottom: 1rem;
+}
+
+.preview-container img {
+  max-height: 280px;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Low Bandwidth Mode */
+body.low-bandwidth-mode {
+  background: #ffffff !important;
+}
+
+body.low-bandwidth-mode .krishi-card,
+body.low-bandwidth-mode .krishi-hero,
+body.low-bandwidth-mode .weather-main-box {
+  box-shadow: none !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  border: 1px solid #cccccc !important;
+}
+
+body.low-bandwidth-mode .hero-heading,
+body.low-bandwidth-mode .hero-description,
+body.low-bandwidth-mode .hero-tagline {
+  color: #111111 !important;
+}
+
+body.low-bandwidth-mode img {
+  filter: grayscale(100%);
+  max-height: 140px;
+}
+
+/* Floating Action / Chat / Voice Bar */
+.floating-assistant-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1050;
+  background: linear-gradient(135deg, #1e7e34, #145a24);
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s;
+  text-decoration: none;
+}
+
+.floating-assistant-btn:hover {
+  transform: scale(1.08);
+  color: white;
+}
+
+/* Footer */
+.krishi-footer {
+  background-color: #0d2812;
+  color: #c9decb;
+  margin-top: auto;
+  padding: 3rem 0 1.5rem 0;
+  font-size: 0.92rem;
+  border-top: 3px solid #2e7d32;
+}
+
+.krishi-footer a {
+  color: #81c784;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.krishi-footer a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.25rem;
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #9cb59e;
+}

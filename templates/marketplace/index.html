@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer-to-Buyer Direct Marketplace – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Marketplace Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-3">
+    <div>
+      <span class="badge bg-purple text-purple-emphasis fw-bold px-3 py-1.5 rounded-pill text-uppercase" style="background:#f3e5f5; color:#7b1fa2;">Direct Trade</span>
+      <h2 class="fw-bold text-success-emphasis mb-0" data-i18n="marketplace_title">Farmer-to-Buyer Direct Marketplace</h2>
+      <div class="text-muted small mt-1" data-i18n="marketplace_sub">
+        Eliminate intermediaries. Sell freshly harvested crops directly to millers, food processors, and bulk buyers.
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('marketplace_sell') }}" class="btn btn-krishi-primary rounded-pill px-4">
+        <i class="fa-solid fa-plus me-1"></i> <span data-i18n="list_my_produce">List My Crop for Sale</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Search & Category Filter Toolbar -->
+  <div class="krishi-card p-3 mb-4">
+    <form method="GET" action="{{ url_for('marketplace') }}" class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+          <input type="text" name="q" class="form-control border-start-0" placeholder="Search by crop, variety, village..." value="{{ q }}">
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+          <option value="all" {% if category == 'all' %}selected{% endif %}>All Categories</option>
+          <option value="Grains" {% if category == 'Grains' %}selected{% endif %}>Grains & Cereals (వరి, మొక్కజొన్న)</option>
+          <option value="Spices" {% if category == 'Spices' %}selected{% endif %}>Spices (మిరప, పసుపు)</option>
+          <option value="Commercial" {% if category == 'Commercial' %}selected{% endif %}>Commercial (పత్తి, చెరకు)</option>
+          <option value="Pulses" {% if category == 'Pulses' %}selected{% endif %}>Pulses & Oilseeds (శనగ, వేరుశనగ)</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <select name="district" class="form-select" onchange="this.form.submit()">
+          <option value="all" {% if district == 'all' %}selected{% endif %}>All Districts</option>
+          <option value="Guntur" {% if district == 'Guntur' %}selected{% endif %}>Guntur</option>
+          <option value="Krishna" {% if district == 'Krishna' %}selected{% endif %}>Krishna / NTR</option>
+          <option value="Warangal" {% if district == 'Warangal' %}selected{% endif %}>Warangal</option>
+          <option value="Kurnool" {% if district == 'Kurnool' %}selected{% endif %}>Kurnool</option>
+          <option value="Khammam" {% if district == 'Khammam' %}selected{% endif %}>Khammam</option>
+          <option value="Nizamabad" {% if district == 'Nizamabad' %}selected{% endif %}>Nizamabad</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-krishi-secondary w-100">
+          <i class="fa-solid fa-filter me-1"></i> Filter
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Listings Grid -->
+  {% if listings %}
+    <div class="row g-4">
+      {% for item in listings %}
+        <div class="col-lg-4 col-md-6">
+          <div class="krishi-card h-100 p-0 overflow-hidden">
+            <!-- Produce Photo or Placeholder -->
+            <div class="position-relative bg-light text-center" style="height: 190px;">
+              {% if item.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" alt="{{ item.crop_name }}" class="w-100 h-100 object-fit-cover" onerror="this.src='https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=500&q=80'">
+              {% else %}
+                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-muted">
+                  <i class="fa-solid fa-wheat-awn fs-1 mb-2 text-success"></i>
+                  <span class="small fw-semibold">{{ item.crop_name }}</span>
+                </div>
+              {% endif %}
+              <span class="badge bg-success position-absolute top-0 start-0 m-2 px-2.5 py-1.5 shadow-sm">
+                {{ item.category }}
+              </span>
+              <span class="badge bg-light text-dark position-absolute bottom-0 end-0 m-2 px-2.5 py-1.5 shadow-sm">
+                {{ item.quantity_quintals }} Quintals Available
+              </span>
+            </div>
+
+            <!-- Content -->
+            <div class="p-3 d-flex flex-column flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div>
+                  <h5 class="fw-bold text-dark mb-0">{{ item.crop_name }}</h5>
+                  <div class="small text-muted">{{ item.variety }}</div>
+                </div>
+                <div class="text-end">
+                  <div class="fw-bold text-success fs-5">₹{{ "{:,.0f}".format(item.price_per_quintal) }}</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">per Quintal {% if item.is_negotiable %}(Neg.){% endif %}</div>
+                </div>
+              </div>
+
+              <div class="small text-muted mb-2">
+                <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ item.village }}, {{ item.district }}
+              </div>
+
+              <p class="small text-secondary flex-grow-1 mb-3">
+                {{ item.description or 'Fresh farm-gate crop produce. Inspected and dried under sunny conditions.' }}
+              </p>
+
+              <div class="p-2 bg-light rounded border mb-3 small d-flex justify-content-between align-items-center">
+                <span><strong>Farmer:</strong> {{ item.seller_name }}</span>
+                <span class="text-muted"><i class="fa-solid fa-truck-moving me-1"></i> {{ item.delivery_options }}</span>
+              </div>
+
+              <!-- Contact Button triggers safe modal -->
+              <button class="btn btn-krishi-primary w-100 btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#inquireModal{{ item.id }}">
+                <i class="fa-solid fa-phone me-1"></i> <span data-i18n="contact_farmer">Contact Seller</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safe Inquire / Contact Modal -->
+        <div class="modal fade" id="inquireModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-3 border-0 shadow">
+              <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-handshake me-2"></i> Contact Seller – {{ item.crop_name }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3 border">
+                  <div class="krishi-logo-icon" style="width:40px; height:40px; font-size:1.2rem;">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0">{{ item.seller_name }}</h6>
+                    <div class="small text-muted">{{ item.village }}, {{ item.district }} | Verified Farmer</div>
+                    <div class="fw-bold text-success mt-1">Direct Phone: <a href="tel:{{ item.contact_phone }}" class="text-success">{{ item.contact_phone }}</a></div>
+                  </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('marketplace_inquire') }}">
+                  <input type="hidden" name="listing_id" value="{{ item.id }}">
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Your Name (మీ పేరు) *</label>
+                    <input type="text" name="buyer_name" class="form-control" placeholder="e.g. Sri Rama Traders" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Your Mobile Number (ఫోన్ నంబర్) *</label>
+                    <input type="tel" name="buyer_phone" class="form-control" placeholder="+91 94401 23456" required>
+                  </div>
+                  <div class="row g-2 mb-3">
+                    <div class="col-6">
+                      <label class="form-label fw-semibold">Quantity Needed (Qtl)</label>
+                      <input type="number" step="0.5" name="quantity_requested" class="form-control" value="10" required>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label fw-semibold">Offered Price (₹/Qtl)</label>
+                      <input type="number" step="50" name="offered_price" class="form-control" value="{{ item.price_per_quintal }}">
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Message for Farmer</label>
+                    <textarea name="message" class="form-control" rows="2" placeholder="Looking for sample inspection or bulk transport arrangement..."></textarea>
+                  </div>
+
+                  <div class="alert alert-light border small text-muted mb-3">
+                    <i class="fa-solid fa-shield-halved text-success me-1"></i>
+                    <strong>Privacy & Fraud Safeguard:</strong> Payments are not handled online. Direct settlement upon physical produce verification at farm gate or mandi yard.
+                  </div>
+
+                  <button type="submit" class="btn btn-krishi-primary w-100 py-2">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Submit Inquiry to Farmer
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="krishi-card text-center py-5">
+      <i class="fa-solid fa-store-slash fs-1 text-muted mb-3"></i>
+      <h4>No Produce Listings Found</h4>
+      <p class="text-muted small">Be the first farmer to list freshly harvested crops for direct trade.</p>
+      <div>
+        <a href="{{ url_for('marketplace_sell') }}" class="btn btn-krishi-primary rounded-pill px-4">
+          <i class="fa-solid fa-plus me-1"></i> Add Produce Listing
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

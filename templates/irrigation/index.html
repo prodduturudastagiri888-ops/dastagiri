@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Irrigation Assistant – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <span class="badge bg-info-subtle text-info fw-bold px-3 py-1.5 rounded-pill text-uppercase">Precision Water Management</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="irrigation_title">Smart Irrigation Assistant</h2>
+    <p class="text-muted max-w-600 mx-auto" data-i18n="irrigation_sub">
+      Avoid excessive water usage and root rot. Calculate accurate crop water needs based on crop stage, soil water holding capacity, and irrigation method.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Form Inputs -->
+    <div class="col-lg-5">
+      <div class="krishi-card">
+        <h5 class="fw-bold text-info mb-3">
+          <i class="fa-solid fa-faucet-drip me-2"></i> Field & Irrigation Parameters
+        </h5>
+
+        <form method="POST" action="{{ url_for('irrigation') }}">
+          <!-- Crop Type -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Crop Type (పంట రకం)</label>
+            <select name="crop" class="form-select">
+              <option value="chilli" {% if form.crop == 'chilli' %}selected{% endif %}>Chilli / Mirchi (మిరప)</option>
+              <option value="paddy" {% if form.crop == 'paddy' %}selected{% endif %}>Paddy / Rice (వరి)</option>
+              <option value="cotton" {% if form.crop == 'cotton' %}selected{% endif %}>Cotton (పత్తి)</option>
+              <option value="maize" {% if form.crop == 'maize' %}selected{% endif %}>Maize (మొక్కజొన్న)</option>
+              <option value="tomato" {% if form.crop == 'tomato' %}selected{% endif %}>Tomato (టమోటా)</option>
+              <option value="groundnut" {% if form.crop == 'groundnut' %}selected{% endif %}>Groundnut (వేరుశనగ)</option>
+              <option value="sugarcane" {% if form.crop == 'sugarcane' %}selected{% endif %}>Sugarcane (చెరకు)</option>
+              <option value="bengal_gram" {% if form.crop == 'bengal_gram' %}selected{% endif %}>Bengal Gram (శనగలు)</option>
+            </select>
+          </div>
+
+          <!-- Soil Type -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" data-i18n="soil_type">Soil Type (నేల రకం)</label>
+            <select name="soil" class="form-select">
+              <option value="black_clay" {% if form.soil == 'black_clay' %}selected{% endif %}>Black Cotton Soil / Clayey (నల్లరేగడి)</option>
+              <option value="red_loam" {% if form.soil == 'red_loam' %}selected{% endif %}>Red Loamy Soil (ఎర్ర నేల)</option>
+              <option value="alluvial" {% if form.soil == 'alluvial' %}selected{% endif %}>Alluvial / Silt Soil (ఒండ్రు నేల)</option>
+              <option value="sandy" {% if form.soil == 'sandy' %}selected{% endif %}>Sandy / Light Soil (ఇసుక నేల)</option>
+            </select>
+          </div>
+
+          <!-- Field Area & Growth Stage -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold" data-i18n="field_area">Field Area (Acres)</label>
+              <input type="number" step="0.25" min="0.25" name="area" class="form-control" value="{{ form.area }}" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold" data-i18n="crop_stage">Growth Stage</label>
+              <select name="stage" class="form-select">
+                <option value="initial" {% if form.stage == 'initial' %}selected{% endif %}>Initial / Germination</option>
+                <option value="vegetative" {% if form.stage == 'vegetative' %}selected{% endif %}>Vegetative</option>
+                <option value="flowering" {% if form.stage == 'flowering' %}selected{% endif %}>Flowering / Fruit Setting</option>
+                <option value="maturity" {% if form.stage == 'maturity' %}selected{% endif %}>Maturity / Ripening</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Recent Rain & Irrigation Method -->
+          <div class="row g-2 mb-4">
+            <div class="col-6">
+              <label class="form-label fw-semibold" data-i18n="recent_rain">Recent Rain (mm)</label>
+              <input type="number" step="1" min="0" name="rainfall" class="form-control" value="{{ form.rainfall }}">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold" data-i18n="irrigation_method">Irrigation Method</label>
+              <select name="method" class="form-select">
+                <option value="drip" {% if form.method == 'drip' %}selected{% endif %}>Drip Irrigation (బిందు సేద్యం)</option>
+                <option value="sprinkler" {% if form.method == 'sprinkler' %}selected{% endif %}>Sprinkler (తుంపర సేద్యం)</option>
+                <option value="furrow" {% if form.method == 'furrow' %}selected{% endif %}>Furrow / Bed (కాలువ పద్ధతి)</option>
+                <option value="flood" {% if form.method == 'flood' %}selected{% endif %}>Flood (సాంప్రదాయ పద్ధతి)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-krishi-primary w-100 py-2.5 fs-6">
+            <i class="fa-solid fa-calculator me-2"></i> <span data-i18n="btn_calculate_water">Calculate Water Plan</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Results Display -->
+    <div class="col-lg-7">
+      {% if calculation and calculation.success %}
+        <div class="krishi-card cacheable-advice border-info">
+          <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+            <div>
+              <span class="badge bg-info text-white px-3 py-1.5 rounded-pill mb-1">Optimal Water Schedule</span>
+              <h3 class="fw-bold text-dark mb-0">
+                {% if current_lang == 'te' %}{{ calculation.crop_name_te }}{% else %}{{ calculation.crop_name_en }}{% endif %}
+                ({{ calculation.area_acres }} Acres)
+              </h3>
+            </div>
+            <button class="btn btn-outline-info btn-sm rounded-pill" onclick="krishiVoice.speak('Recommended irrigation interval is every {{ calculation.cycle_frequency_days }} days for approximately {{ calculation.recommended_pump_hours }} hours.')">
+              <i class="fa-solid fa-volume-high me-1"></i> Listen
+            </button>
+          </div>
+
+          <!-- Metrics Grid -->
+          <div class="row g-3 text-center mb-4">
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded-3 border">
+                <div class="small text-muted mb-1" data-i18n="water_needed">Daily Water Volume</div>
+                <div class="fs-4 fw-bold text-primary">{{ "{:,.0f}".format(calculation.daily_water_liters) }} L</div>
+                <div class="small text-muted">Per 24 Hours</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded-3 border">
+                <div class="small text-muted mb-1" data-i18n="water_schedule">Cycle Schedule</div>
+                <div class="fs-4 fw-bold text-success">Every {{ calculation.cycle_frequency_days }} Days</div>
+                <div class="small text-muted">~{{ calculation.recommended_pump_hours }} Hours (3 HP Pump)</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded-3 border">
+                <div class="small text-muted mb-1" data-i18n="water_saving_achieved">Water Conserved</div>
+                <div class="fs-4 fw-bold text-success">{{ calculation.water_savings_percent }}% Saved</div>
+                <div class="small text-muted">vs Flood Irrigation</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agronomic Water-Saving Guidance -->
+          <h6 class="fw-bold text-dark mb-2">
+            <i class="fa-solid fa-lightbulb text-warning me-1"></i> Water-Saving Tips:
+          </h6>
+          <div class="d-flex flex-column gap-2 mb-4">
+            {% if current_lang == 'te' %}
+              {% for tip in calculation.tips_te %}
+                <div class="p-2.5 bg-light rounded border-start border-3 border-info small">
+                  <i class="fa-solid fa-droplet text-info me-2"></i> {{ tip }}
+                </div>
+              {% endfor %}
+            {% else %}
+              {% for tip in calculation.tips_en %}
+                <div class="p-2.5 bg-light rounded border-start border-3 border-info small">
+                  <i class="fa-solid fa-droplet text-info me-2"></i> {{ tip }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <!-- Disclaimer -->
+          <div class="p-2.5 bg-light rounded border small text-muted">
+            <i class="fa-solid fa-circle-exclamation text-secondary me-1"></i>
+            {% if current_lang == 'te' %}
+              {{ calculation.disclaimer_te }}
+            {% else %}
+              {{ calculation.disclaimer_en }}
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        <div class="krishi-card d-flex flex-column align-items-center justify-content-center text-center p-5">
+          <div class="rounded-circle bg-light p-4 text-info mb-3" style="font-size: 3rem;">
+            <i class="fa-solid fa-faucet-drip"></i>
+          </div>
+          <h4 class="fw-bold text-dark">Precision Irrigation Planner</h4>
+          <p class="text-muted small max-w-500 mb-0">
+            Select your crop type, soil profile, and field area to generate an accurate water budget and pumping schedule.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

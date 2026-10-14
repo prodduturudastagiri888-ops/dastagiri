@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Farming Calendar & Task Reminders – SMART KRISHI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1.5 rounded-pill text-uppercase">Seasonal Management</span>
+    <h2 class="fw-bold text-success-emphasis mt-2" data-i18n="nav_calendar">Farming Calendar & Activity Reminders</h2>
+    <p class="text-muted max-w-600 mx-auto">
+      Plan critical farm operations: sowing, fertilizer split applications, pest spraying intervals, and harvest deadlines.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Add Activity Form -->
+    <div class="col-lg-4">
+      <div class="krishi-card">
+        <h5 class="fw-bold text-primary mb-3">
+          <i class="fa-solid fa-calendar-plus me-2"></i> Schedule New Activity
+        </h5>
+
+        <form method="POST" action="{{ url_for('calendar') }}">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Crop Name</label>
+            <input type="text" name="crop_name" class="form-control" placeholder="e.g. Paddy BPT, Chilli Teja" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Activity Title (పని పేరు)</label>
+            <input type="text" name="task_title" class="form-control" placeholder="e.g. 2nd split Urea application" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Task Category</label>
+            <select name="task_type" class="form-select">
+              <option value="fertilizer">Fertilizer Application (ఎరువులు)</option>
+              <option value="pesticide">Pest/Disease Spray (పిచికారీ)</option>
+              <option value="irrigation">Irrigation / Drainage (నీటి తడి)</option>
+              <option value="weeding">Weeding / Interculture (కలుపు)</option>
+              <option value="sowing">Sowing / Nursery (విత్తనాలు/నాట్లు)</option>
+              <option value="harvesting">Harvesting & Curing (కోత)</option>
+            </select>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Scheduled Date</label>
+              <input type="date" name="scheduled_date" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Priority</label>
+              <select name="priority" class="form-select">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">Urgent / High</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Notes / Chemical Dosage</label>
+            <textarea name="notes" class="form-control" rows="2" placeholder="e.g. 25kg Urea + 10kg Potash per acre"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-krishi-primary w-100 py-2.5">
+            <i class="fa-solid fa-plus me-1"></i> Add to Calendar
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Task List -->
+    <div class="col-lg-8">
+      <div class="krishi-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-dark mb-0">Upcoming Farm Activities</h5>
+          <span class="badge bg-success-subtle text-success">{{ tasks|length }} Reminders</span>
+        </div>
+
+        {% if tasks %}
+          <div class="list-group list-group-flush">
+            {% for task in tasks %}
+              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                  <a href="{{ url_for('calendar_toggle', task_id=task.id) }}" class="text-decoration-none">
+                    {% if task.status == 'completed' %}
+                      <i class="fa-solid fa-circle-check text-success fs-3"></i>
+                    {% else %}
+                      <i class="fa-regular fa-circle text-muted fs-3"></i>
+                    {% endif %}
+                  </a>
+                  <div>
+                    <h6 class="fw-bold mb-1 {% if task.status == 'completed' %}text-decoration-line-through text-muted{% else %}text-dark{% endif %}">
+                      {% if current_lang == 'te' %}{{ task.task_title_te }}{% else %}{{ task.task_title_en }}{% endif %}
+                    </h6>
+                    <div class="small text-muted">
+                      <span class="badge bg-secondary-subtle text-secondary me-2">{{ task.crop_name }}</span>
+                      <i class="fa-regular fa-clock me-1"></i> Due: <strong>{{ task.scheduled_date }}</strong>
+                      {% if task.notes %} | Note: {{ task.notes }}{% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-end">
+                  <span class="badge {% if task.priority == 'high' %}bg-danger{% elif task.priority == 'medium' %}bg-warning text-dark{% else %}bg-info{% endif %} mb-1">
+                    {{ task.priority|capitalize }} Priority
+                  </span>
+                  <div class="small text-muted">
+                    {% if task.status == 'completed' %}
+                      <span class="text-success fw-bold"><i class="fa-solid fa-check"></i> Done</span>
+                    {% else %}
+                      <span class="text-warning-emphasis fw-bold">Pending</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-5 text-muted">
+            <i class="fa-regular fa-calendar-check fs-1 mb-2"></i>
+            <h5>Your Calendar is Clear</h5>
+            <p class="small">Add upcoming fertilizer schedules, pesticide sprays, or harvest plans on the left.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
